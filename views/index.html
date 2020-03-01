@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Header Parser Micro Service</title>
+		<link rel="stylesheet" href="/css/styles.css" />
+		<script defer src="/js/app.js"></script>
+	</head>
+	<body>
+		<div class="wrapper">
+			<header class="hero">
+				<h1>URL Shortener Micro Service</h1>
+			</header>
+			<div class="timeStamp">
+				<form action="/api/whoami" class="timeStamp__form">
+					<input type="url" id="urlToShort" placeholder="E.g https://www.google.com" />
+					<button class="timeStamp__submit" type="submit">Get Shortened URL</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
