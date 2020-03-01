@@ -12,10 +12,8 @@ POST `[project_url]/api/shorturl/new - body (urlencoded) :  url=https://www.goog
 
 ## Usage
 
-[this_project_url]/api/shorturl/3
+[this_project_url]/api/shorturl/506 
 
-## Will redirect to:
+Will redirect to: https://www.google.com
 
-https://www.freecodecamp.org/forum/
-
-## DEMO
+### [Project Demo](https://hellblazer616-fcc-url-shortener.glitch.me 'Project Demo')
