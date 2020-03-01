@@ -3,8 +3,8 @@ const path = require('path');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
-const dbConnect = require('./utils/database');
-const shortUrl = require('./resources/shortUrl.router');
+const { connect: dbConnect } = require('./utils/database');
+const xo = require('./resources/shortUrl.router');
 
 app.use(cors({ optionSuccessStatus: 200 })); // some legacy browsers choke on 204
 
@@ -16,7 +16,7 @@ app.get('/', function(req, res) {
 	res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
-app.use('/api/shorturl', shortUrl);
+app.use('/api/shorturl', xo);
 
 app.use((req, res) => {
 	return res.status(404).send({ message: 'Route' + req.url + ' Not found.' });

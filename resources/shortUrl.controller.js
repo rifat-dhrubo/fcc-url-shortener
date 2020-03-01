@@ -1,24 +1,29 @@
 const dns = require('dns');
 const ShortUrl = require('./shortUrl.model');
+const { asyncHandle } = require('../utils/database');
 
 const genShortURL = async (req, res) => {
 	const { urlToShort } = req.body;
-	let test = false;
+	let foundUrl = false;
+
 	const url = String(urlToShort.slice(12)); // only domain e.g google.com
-	try {
-		const address = await lookupPromise(url);
-		if (address) test = true;
-	} catch (err) {
-		test = false;
-		console.error(err);
+	const address = await lookupPromise(url);
+
+	if (address) foundUrl = true;
+	else {
+		foundUrl = false;
+		console.error(`errurl ${errUrl}`);
 	}
 
-	if (test) {
-		try {
-			const found = await ShortUrl.find({ original_url: urlToShort }).exec();
-			const short_url = Math.floor(Math.random() * 1000);
+	if (foundUrl) {
+		const [errData, foundData] = await asyncHandle(
+			ShortUrl.find({ original_url: urlToShort }).exec()
+		);
 
-			if (found.length === 0) {
+		const short_url = Math.floor(Math.random() * 1000);
+
+		if (errData === null) {
+			if (foundData.length === 0) {
 				ShortUrl.create({
 					original_url: urlToShort,
 					short_url: short_url,
@@ -30,16 +35,28 @@ const genShortURL = async (req, res) => {
 			} else {
 				res.json({
 					original_url: urlToShort,
-					short_url: found[0].short_url,
+					short_url: foundData[0].short_url,
 				});
 			}
-		} catch (error) {
-			console.error(error);
+		} else {
+			console.error(errData);
 		}
 	} else {
 		res.json({
 			error: 'invalid URL',
 		});
+	}
+};
+
+const redirectFoundUrl = async (req, res) => {
+	const { short_url } = req.params;
+	const [, foundData] = await asyncHandle(ShortUrl.findOne({ short_url: short_url }).exec());
+	if (foundData === null) {
+		res.json({
+			error: 'Specified short url do not exist',
+		});
+	} else {
+		res.redirect(301, foundData.original_url);
 	}
 };
 
@@ -52,4 +69,4 @@ async function lookupPromise(url) {
 	});
 }
 
-module.exports = genShortURL;
+module.exports = { genShortURL, redirectFoundUrl };
