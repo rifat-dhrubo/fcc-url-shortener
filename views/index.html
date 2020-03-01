@@ -13,8 +13,13 @@
 				<h1>URL Shortener Micro Service</h1>
 			</header>
 			<div class="timeStamp">
-				<form action="/api/whoami" class="timeStamp__form">
-					<input type="url" id="urlToShort" placeholder="E.g https://www.google.com" />
+				<form action="/api/shorturl/new" class="timeStamp__form" method="POST">
+					<input
+						type="url"
+						name="urlToShort"
+						id="urlToShort"
+						placeholder="E.g https://www.google.com"
+					/>
 					<button class="timeStamp__submit" type="submit">Get Shortened URL</button>
 				</form>
 			</div>

@@ -9,6 +9,8 @@ const shortUrl = require('./resources/shortUrl.router');
 app.use(cors({ optionSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 app.use(express.static('public'));
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.get('/', function(req, res) {
 	res.sendFile(path.join(__dirname + '/views/index.html'));

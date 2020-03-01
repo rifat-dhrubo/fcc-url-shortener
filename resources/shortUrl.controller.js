@@ -1,18 +1,55 @@
-const headerInfo = (req, res) => {
-	console.log(req);
-	const { rawHeaders } = req;
+const dns = require('dns');
+const ShortUrl = require('./shortUrl.model');
 
-	const index = rawHeaders.reduce((acc, value, index, array) => {
-		if (value === 'Accept-Language' || value === 'accept-language') {
-			acc['language'] = array[index + 1];
+const genShortURL = async (req, res) => {
+	const { urlToShort } = req.body;
+	let test = false;
+	const url = String(urlToShort.slice(12)); // only domain e.g google.com
+	try {
+		const address = await lookupPromise(url);
+		if (address) test = true;
+	} catch (err) {
+		test = false;
+		console.error(err);
+	}
+
+	if (test) {
+		try {
+			const found = await ShortUrl.find({ original_url: urlToShort }).exec();
+			const short_url = Math.floor(Math.random() * 1000);
+
+			if (found.length === 0) {
+				ShortUrl.create({
+					original_url: urlToShort,
+					short_url: short_url,
+				});
+				res.json({
+					original_url: urlToShort,
+					short_url: short_url,
+				});
+			} else {
+				res.json({
+					original_url: urlToShort,
+					short_url: found[0].short_url,
+				});
+			}
+		} catch (error) {
+			console.error(error);
 		}
-		if (value === 'User-Agent' || value === 'user-agent') {
-			acc['software'] = array[index + 1];
-		}
-		return acc;
-	}, {});
-	index['ipaddress'] = req.ip;
-	res.json(index);
+	} else {
+		res.json({
+			error: 'invalid URL',
+		});
+	}
 };
 
-module.exports = { headerInfo };
+async function lookupPromise(url) {
+	return new Promise((resolve, reject) => {
+		dns.lookup(url, (err, address, family) => {
+			if (err) reject(err);
+			resolve(address);
+		});
+	});
+}
+
+module.exports = genShortURL;
